@@ -14,17 +14,16 @@ import java.util.Date;
 public class ParkingService {
 
     private static final Logger logger = LogManager.getLogger("ParkingService");
-
-    private static FareCalculatorService fareCalculatorService = new FareCalculatorService();
-
     private InputReaderUtil inputReaderUtil;
     private ParkingSpotDAO parkingSpotDAO;
     private  TicketDAO ticketDAO;
+    private FareCalculatorService fareCalculatorService ;
 
-    public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO){
+    public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO ){
         this.inputReaderUtil = inputReaderUtil;
         this.parkingSpotDAO = parkingSpotDAO;
         this.ticketDAO = ticketDAO;
+        this.fareCalculatorService = new FareCalculatorService(ticketDAO);
     }
 
     public void processIncomingVehicle() {

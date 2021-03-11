@@ -11,9 +11,11 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 public class FareCalculatorService {
 
         int HALF_HOUR =1800;
-        TicketDAO userRec = new  TicketDAO();
+        private TicketDAO userRec;
 
-
+        public FareCalculatorService( TicketDAO newuserRec){
+            userRec = newuserRec;
+      }
 
     public void  calculateFare(Ticket ticket) throws SQLException, ClassNotFoundException {
             if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {

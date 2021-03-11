@@ -9,13 +9,18 @@ import com.parkit.parkingsystem.service.FareCalculatorService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import java.sql.SQLException;
 import java.util.Date;
 
+@ExtendWith(MockitoExtension.class)
 public class FareCalculatorServiceTest {
 
     private static FareCalculatorService fareCalculatorService;
@@ -26,13 +31,13 @@ public class FareCalculatorServiceTest {
 
     @BeforeAll
     private static void setUp() {
-        fareCalculatorService = new FareCalculatorService();
     }
 
     @BeforeEach
     private void setUpPerTest() {
         ticket = new Ticket();
-        TicketDAO UserRec = new  TicketDAO();
+        fareCalculatorService = new FareCalculatorService(UserRec);
+
     }
 
     @Test
@@ -188,6 +193,23 @@ public class FareCalculatorServiceTest {
         fareCalculatorService.calculateFare(ticket);
         assertEquals( 24 * Fare.CAR_RATE_PER_HOUR , ticket.getPrice());
     }
+
+    @Test
+    public void toto() throws SQLException, ClassNotFoundException {
+        Date inTime = new Date();
+        inTime.setTime( System.currentTimeMillis() - (   60 * 60 * 1000) );//24 hours parking time should give 24 * parking fare per hour
+        Date outTime = new Date();
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR,false);
+        when(UserRec.isRec("ABCDEF")).thenReturn(true);
+        ticket.setVehicleRegNumber("ABCDEF");
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+
+        fareCalculatorService.calculateFare(ticket);
+        assertEquals( ticket.getPrice()  , Fare.CAR_RATE_PER_HOUR * 0.95 );
+    }
+
 
 
 }

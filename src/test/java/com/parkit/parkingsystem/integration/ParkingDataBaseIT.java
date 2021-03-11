@@ -54,7 +54,7 @@ public class ParkingDataBaseIT {
         ticketDAO = new TicketDAO();
         ticketDAO.dataBaseConfig = dataBaseTestConfig;
         dataBasePrepareService = new DataBasePrepareService();
-        fareCalculatorService = new FareCalculatorService();
+        fareCalculatorService = new FareCalculatorService(ticketDAO);
 
     }
 
@@ -233,7 +233,6 @@ public class ParkingDataBaseIT {
         assertEquals(1, ticket.getId());
         assertEquals(1, ticket.getParkingSpot().getId());
         assertEquals("ABCDEF", ticket.getVehicleRegNumber());
-
         Date inTime = new Date();
         inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
         Date outTime = new Date();
