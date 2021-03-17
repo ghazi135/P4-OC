@@ -146,7 +146,7 @@ public class ParkingDataBaseIT {
         assertEquals(1, ticket.getId());
         assertEquals(1, ticket.getParkingSpot().getId());
         assertEquals("ABCDEF", ticket.getVehicleRegNumber());
-        assertTrue(ticketDAO.isRec("ABCDEF"));
+        assertTrue(ticketDAO.isRecurentUser("ABCDEF"));
 
 
 
@@ -195,7 +195,7 @@ public class ParkingDataBaseIT {
         ticket.setParkingSpot(parkingSpot);
         fareCalculatorService.calculateFare(ticket);
         assertEquals(ticket.getPrice(), Fare.BIKE_RATE_PER_HOUR * 0.95);
-        assertTrue(ticketDAO.isRec("ABCDEF"));
+        assertTrue(ticketDAO.isRecurentUser("ABCDEF"));
 
 
 
@@ -242,7 +242,7 @@ public class ParkingDataBaseIT {
         ticket.setParkingSpot(parkingSpot);
         fareCalculatorService.calculateFare(ticket);
         assertEquals(ticket.getPrice(), Fare.CAR_RATE_PER_HOUR * 0.95);
-        assertTrue(ticketDAO.isRec("ABCDEF"));
+        assertTrue(ticketDAO.isRecurentUser("ABCDEF"));
 
 
 

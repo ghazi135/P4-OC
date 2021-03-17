@@ -13,7 +13,7 @@ public class FareCalculatorService {
         int HALF_HOUR =1800;
         private TicketDAO userRec;
 
-        public FareCalculatorService( TicketDAO newuserRec){
+    public FareCalculatorService( TicketDAO newuserRec){
             userRec = newuserRec;
       }
 
@@ -41,7 +41,7 @@ public class FareCalculatorService {
             }
             ticket.setPrice(duration > HALF_HOUR ? duration / 3600.0 * ratePerHour : 0);
 
-            if (userRec.isRec(ticket.getVehicleRegNumber())){
+            if (userRec.isRecurentUser(ticket.getVehicleRegNumber())){
                 System.out.println("You are a recurent User");
                 ticket.setPrice(ticket.getPrice() * 0.95);
             }

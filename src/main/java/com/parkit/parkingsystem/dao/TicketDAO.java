@@ -16,7 +16,7 @@ public class TicketDAO {
 
     public DataBaseConfig dataBaseConfig = new DataBaseConfig();
 
-    public boolean isRec(String vehicleRegNumber) throws SQLException, ClassNotFoundException {
+    public boolean isRecurentUser(String vehicleRegNumber) throws SQLException, ClassNotFoundException {
         Connection con = null;
 
         con = dataBaseConfig.getConnection();
