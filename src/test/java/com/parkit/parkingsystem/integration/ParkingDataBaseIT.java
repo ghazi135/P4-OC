@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,45 +34,48 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ParkingDataBaseIT {
 
-    private static     DataBaseTestConfig    dataBaseTestConfig = new DataBaseTestConfig();
+    private static DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
     private static FareCalculatorService fareCalculatorService;
     @Spy
-    private static     ParkingSpotDAO        parkingSpotDAO;
+    private static ParkingSpotDAO parkingSpotDAO;
     @Spy
     private static TicketDAO ticketDAO;
     private static DataBasePrepareService dataBasePrepareService;
 
     @Mock
     private static InputReaderUtil inputReaderUtil;
-    private Ticket ticket;
+    private        Ticket          ticket;
 
     @BeforeAll
-    private static void setUp() throws Exception{
-        parkingSpotDAO = new ParkingSpotDAO();
+    private static void setUp() throws Exception {
+
+        parkingSpotDAO                = new ParkingSpotDAO();
         parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
-        ticketDAO = new TicketDAO();
-        ticketDAO.dataBaseConfig = dataBaseTestConfig;
-        dataBasePrepareService = new DataBasePrepareService();
-        fareCalculatorService = new FareCalculatorService(ticketDAO);
+        ticketDAO                     = new TicketDAO();
+        ticketDAO.dataBaseConfig      = dataBaseTestConfig;
+        dataBasePrepareService        = new DataBasePrepareService();
+        fareCalculatorService         = new FareCalculatorService(ticketDAO);
 
     }
 
     @BeforeEach
     private void setUpPerTest() throws Exception {
+
         when(inputReaderUtil.readSelection()).thenReturn(1);
         when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
         dataBasePrepareService.clearDataBaseEntries();
     }
 
     @AfterAll
-    private static void tearDown(){
+    private static void tearDown() {
 
     }
 
     @Test
     public void testParkingACar() throws InterruptedException {
+
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        Date dateIn = new Date();
+        Date           dateIn         = new Date();
         TimeUnit.SECONDS.sleep(1);
         parkingService.processIncomingVehicle();
         TimeUnit.SECONDS.sleep(1);
@@ -88,14 +90,14 @@ public class ParkingDataBaseIT {
         assertNotNull(ticket.getInTime());
         assertTrue(ticket.getInTime().after(dateIn));
         assertNull(ticket.getOutTime());
-        //TODO: check that a ticket is actualy saved in DB and Parking table is updated with availability
     }
 
     @Test
     public void testParkingLotExit() throws InterruptedException {
+
         testParkingACar();
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        Date dateAfter = new Date();
+        Date           dateAfter      = new Date();
         TimeUnit.SECONDS.sleep(1);
         parkingService.processExitingVehicle();
         TimeUnit.SECONDS.sleep(1);
@@ -111,15 +113,14 @@ public class ParkingDataBaseIT {
         assertEquals(duration > 1800 ? duration / 3600.0 * Fare.CAR_RATE_PER_HOUR : 0, NewTicket.getPrice());
         verify(parkingSpotDAO, Mockito.times(2)).updateParking(any(ParkingSpot.class));
         assertEquals(1, parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR));
-        //TODO: check that the fare generated and out time are populated correctly in the database
     }
 
     @Test
-    public void testRecurentUser() throws InterruptedException, SQLException, ClassNotFoundException {
+    public void testRecurrentUser() throws InterruptedException, SQLException, ClassNotFoundException {
         /********************QUIT THE PARKING******************************/
         testParkingACar();
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        Date dateAfter = new Date();
+        Date           dateAfter      = new Date();
         TimeUnit.SECONDS.sleep(1);
         parkingService.processExitingVehicle();
         TimeUnit.SECONDS.sleep(1);
@@ -149,16 +150,15 @@ public class ParkingDataBaseIT {
         assertTrue(ticketDAO.isRecurentUser("ABCDEF"));
 
 
-
     }
 
 
     @Test
-    public void testCalculFareRecurentUserBIKE() throws InterruptedException, SQLException, ClassNotFoundException {
+    public void testCalculFareRecurrentUserBIKE() throws InterruptedException, SQLException, ClassNotFoundException {
         /********************QUIT THE PARKING******************************/
         testParkingACar();
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        Date dateAfter = new Date();
+        Date           dateAfter      = new Date();
         TimeUnit.SECONDS.sleep(1);
         parkingService.processExitingVehicle();
         TimeUnit.SECONDS.sleep(1);
@@ -188,7 +188,7 @@ public class ParkingDataBaseIT {
 
         Date inTime = new Date();
         inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
-        Date outTime = new Date();
+        Date        outTime     = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
@@ -198,7 +198,6 @@ public class ParkingDataBaseIT {
         assertTrue(ticketDAO.isRecurentUser("ABCDEF"));
 
 
-
     }
 
     @Test
@@ -206,7 +205,7 @@ public class ParkingDataBaseIT {
         /********************QUIT THE PARKING******************************/
         testParkingACar();
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        Date dateAfter = new Date();
+        Date           dateAfter      = new Date();
         TimeUnit.SECONDS.sleep(1);
         parkingService.processExitingVehicle();
         TimeUnit.SECONDS.sleep(1);
@@ -235,7 +234,7 @@ public class ParkingDataBaseIT {
         assertEquals("ABCDEF", ticket.getVehicleRegNumber());
         Date inTime = new Date();
         inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000));
-        Date outTime = new Date();
+        Date        outTime     = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
         ticket.setInTime(inTime);
         ticket.setOutTime(outTime);
@@ -243,7 +242,6 @@ public class ParkingDataBaseIT {
         fareCalculatorService.calculateFare(ticket);
         assertEquals(ticket.getPrice(), Fare.CAR_RATE_PER_HOUR * 0.95);
         assertTrue(ticketDAO.isRecurentUser("ABCDEF"));
-
 
 
     }
