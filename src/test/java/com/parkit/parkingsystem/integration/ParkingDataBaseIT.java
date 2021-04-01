@@ -34,17 +34,17 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ParkingDataBaseIT {
 
-    private static DataBaseTestConfig dataBaseTestConfig = new DataBaseTestConfig();
-    private static FareCalculatorService fareCalculatorService;
+    private static final DataBaseTestConfig    dataBaseTestConfig = new DataBaseTestConfig();
+    private static       FareCalculatorService fareCalculatorService;
     @Spy
-    private static ParkingSpotDAO parkingSpotDAO;
+    private static ParkingSpotDAO         parkingSpotDAO;
     @Spy
-    private static TicketDAO ticketDAO;
+    private static TicketDAO              ticketDAO;
     private static DataBasePrepareService dataBasePrepareService;
 
     @Mock
     private static InputReaderUtil inputReaderUtil;
-    private        Ticket          ticket;
+    private Ticket          ticket;
 
     @BeforeAll
     private static void setUp() throws Exception {
@@ -70,6 +70,63 @@ public class ParkingDataBaseIT {
     private static void tearDown() {
 
     }
+    @Test
+    public void testIncomingError() {
+        try{
+            when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("");
+
+            ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
+            parkingService.processIncomingVehicle();
+
+        }
+        catch (Exception e){
+            assertNotNull(e);
+        }
+
+    }
+
+    @Test
+    public void testExitingErrorExeption() {
+        try{
+
+            ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+            when(ticketDAO.getTicket("ABCDEF")).thenReturn(null);
+            parkingService.processExitingVehicle();
+            testParkingACar();
+        }
+        catch (Exception e){
+            assertNotNull(e);
+        }
+
+    }
+
+    @Test
+    public void testParkingABike() throws Exception {
+        when(inputReaderUtil.readSelection()).thenReturn(2);
+        when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+        Date           dateIn         = new Date();
+        TimeUnit.SECONDS.sleep(1);
+        parkingService.processIncomingVehicle();
+        TimeUnit.SECONDS.sleep(1);
+        verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+        assertEquals(5, parkingSpotDAO.getNextAvailableSlot(ParkingType.BIKE));
+        verify(ticketDAO, Mockito.times(1)).saveTicket(any(Ticket.class));
+        ticket = ticketDAO.getTicket("ABCDEF");
+        assertEquals(1, ticket.getId());
+        assertEquals(4, ticket.getParkingSpot().getId());
+        assertEquals("ABCDEF", ticket.getVehicleRegNumber());
+        assertEquals(0.0, ticket.getPrice());
+        assertNotNull(ticket.getInTime());
+        assertTrue(ticket.getInTime().after(dateIn));
+        assertNull(ticket.getOutTime());
+
+    }
+
+
+
+    /********************************************************************************/
 
     @Test
     public void testParkingACar() throws InterruptedException {
@@ -90,6 +147,7 @@ public class ParkingDataBaseIT {
         assertNotNull(ticket.getInTime());
         assertTrue(ticket.getInTime().after(dateIn));
         assertNull(ticket.getOutTime());
+
     }
 
     @Test
@@ -152,7 +210,6 @@ public class ParkingDataBaseIT {
 
     }
 
-
     @Test
     public void testCalculFareRecurrentUserBIKE() throws InterruptedException, SQLException, ClassNotFoundException {
         /********************QUIT THE PARKING******************************/
@@ -201,7 +258,7 @@ public class ParkingDataBaseIT {
     }
 
     @Test
-    public void testCalculFareRecurentUserCAR() throws InterruptedException, SQLException, ClassNotFoundException {
+    public void testCalculFareRecurrentUserCAR() throws InterruptedException, SQLException, ClassNotFoundException {
         /********************QUIT THE PARKING******************************/
         testParkingACar();
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
@@ -221,7 +278,6 @@ public class ParkingDataBaseIT {
         /***********************************GET IN PARKING***********************************/
 
         parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-        Date dateIn = new Date();
         TimeUnit.SECONDS.sleep(1);
         parkingService.processIncomingVehicle();
         TimeUnit.SECONDS.sleep(1);
@@ -246,5 +302,36 @@ public class ParkingDataBaseIT {
 
     }
 
+
+    /*    @Test
+    public void testIncomingWrongChoiceInput() {
+            try {
+                when(inputReaderUtil.readSelection()).thenReturn(4);
+
+                ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
+                parkingService.processIncomingVehicle();
+
+            }
+            catch (IllegalArgumentException e){
+                assertNotNull(e);
+
+            }
+
+
+
+    }*/
+
+    /*    @Test
+    public void testExitingErrorSecondVersion() {
+        when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(false);
+
+        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+
+            parkingService.processExitingVehicle();
+        assertFalse(ticketDAO.updateTicket(any(Ticket.class)));
+
+
+    }*/
 
 }

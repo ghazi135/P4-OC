@@ -25,7 +25,6 @@ public class FareCalculatorService {
         }
 
 
-
         double duration = SECONDS.between(ticket.getInTime().toInstant(), ticket.getOutTime().toInstant());
         double ratePerHour;
         switch (ticket.getParkingSpot().getParkingType()) {

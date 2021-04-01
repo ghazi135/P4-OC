@@ -16,11 +16,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ParkingServiceTest {
 
+    @Mock
     private static ParkingService parkingService;
 
     @Mock
@@ -29,6 +32,10 @@ public class ParkingServiceTest {
     private static ParkingSpotDAO  parkingSpotDAO;
     @Mock
     private static TicketDAO       ticketDAO;
+    @Mock
+    private        Ticket          ticket = new Ticket();
+
+    ParkingSpot parkingSpot;
 
     @BeforeEach
     private void setUpPerTest() {
@@ -36,8 +43,8 @@ public class ParkingServiceTest {
         try {
             when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
 
-            ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
-            Ticket      ticket      = new Ticket();
+            parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+            ticket      = new Ticket();
             ticket.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000)));
             ticket.setParkingSpot(parkingSpot);
             ticket.setVehicleRegNumber("ABCDEF");
@@ -59,5 +66,22 @@ public class ParkingServiceTest {
         parkingService.processExitingVehicle();
         verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
     }
+
+
+ /*   @Test
+    public void processExitingVehicleTestExeptions() {
+        when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(false);
+        parkingService.processExitingVehicle();
+        assertFalse(ticketDAO.updateTicket(ticket));
+    }*/
+
+/*    @Test
+    public void TypeVehicleTestExeptions() {
+        when(parkingService.getVehichleType()).thenReturn(null);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> parkingService.getVehichleType());
+        assertEquals(exception.getMessage(),"Entered input is invalid" );
+
+    }*/
+
 
 }
