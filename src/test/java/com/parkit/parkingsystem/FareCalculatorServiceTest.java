@@ -191,7 +191,7 @@ public class FareCalculatorServiceTest {
         assertEquals(0.0, ticket.getPrice());
     }
 
-    @SuppressWarnings("TestFailedLine")
+
     @Test
     public void calculateFareCarWithMoreThanADayParkingTime() throws SQLException, ClassNotFoundException {
 
