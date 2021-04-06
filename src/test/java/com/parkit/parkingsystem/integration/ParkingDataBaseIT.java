@@ -70,6 +70,9 @@ public class ParkingDataBaseIT {
     private static void tearDown() {
 
     }
+
+    /*************************************test Exceptions*******************************************/
+
     @Test
     public void testIncomingError() {
         try{
@@ -126,7 +129,7 @@ public class ParkingDataBaseIT {
 
 
 
-    /********************************************************************************/
+    /*************************************test parking with database*******************************************/
 
     @Test
     public void testParkingACar() throws InterruptedException {
@@ -302,36 +305,5 @@ public class ParkingDataBaseIT {
 
     }
 
-
-    /*    @Test
-    public void testIncomingWrongChoiceInput() {
-            try {
-                when(inputReaderUtil.readSelection()).thenReturn(4);
-
-                ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-
-                parkingService.processIncomingVehicle();
-
-            }
-            catch (IllegalArgumentException e){
-                assertNotNull(e);
-
-            }
-
-
-
-    }*/
-
-    /*    @Test
-    public void testExitingErrorSecondVersion() {
-        when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(false);
-
-        ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
-
-            parkingService.processExitingVehicle();
-        assertFalse(ticketDAO.updateTicket(any(Ticket.class)));
-
-
-    }*/
 
 }
